@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "discord.js": "^14.7.1",
-    "minecraft-server-util": "^5.4.0"
-  }
-}
