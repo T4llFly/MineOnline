@@ -3,6 +3,9 @@
 
 ![image](https://user-images.githubusercontent.com/117188933/222720191-0a85c067-d9b5-4eef-9b81-8e373dfb5938.png)
 
+![image](https://user-images.githubusercontent.com/117188933/222779741-390bc459-7900-4e23-a668-94052b5f802a.png)
+
+
 ## Описание
 На данный момент бот только умеет показывать информацию об онлайне сервера Minecraft в своем статусе Rich Presence. Делался эксклюзивно для [Catangens](https://catangens.ru), но было решено выложить его для всех
 
