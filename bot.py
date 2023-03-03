@@ -1,4 +1,6 @@
 import discord
+from discord.ext import commands
+from discord import app_commands
 import asyncio
 from mcstatus import JavaServer
 
@@ -6,22 +8,38 @@ TOKEN = input("Введите свой токен: ")
 SERVER_IP = input("Введите IP сервера: ")
 SERVER_PORT = input("Введите порт сервера (стандарт 25565): ")
 
-client = discord.Client(intents=discord.Intents.default())
+bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
+server = JavaServer.lookup(f'{SERVER_IP}:{SERVER_PORT}')
 
-@client.event
+@bot.event
 async def on_ready():
-    print(f'Запущен как {client.user}')
-    client.loop.create_task(update_presence())
+    print(f'Запущен как {bot.user}')
+    bot.loop.create_task(update_presence())
+    try:
+        await bot.tree.sync()
+    except Exception as e:
+        print(e)
 
 async def update_presence():
-    await client.wait_until_ready()
-    server = JavaServer.lookup(f'{SERVER_IP}:{SERVER_PORT}')
-    while not client.is_closed():
+    await bot.wait_until_ready()
+    while not bot.is_closed():
         try:
             status = server.status()
-            await client.change_presence(activity=discord.Game(name=f"{status.players.online} игроков онлайн"))
+            await bot.change_presence(activity=discord.Game(name=f"{status.players.online} игроков онлайн"))
         except:
-            await client.change_presence(activity=discord.Game(name="Тех.обслуживание"))
+            await bot.change_presence(activity=discord.Game(name="Тех.обслуживание"))
         await asyncio.sleep(30)
 
-client.run(TOKEN)
+@bot.tree.command(name="online")
+async def online(interaction: discord.Interaction):
+        try:
+            status = server.status()
+            players = "\n".join([player.name for player in status.players.sample])
+            online = status.players.online
+            max_players = status.players.max
+            response = f"**Сейчас на сервере {online}/{max_players} игроков:**\n{players}"
+        except:
+            response = "**Сервер на тех.обслуживании**"
+        await interaction.response.send_message(response)
+
+bot.run(TOKEN)
